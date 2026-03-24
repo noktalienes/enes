@@ -1,479 +1,345 @@
 <!DOCTYPE html>
-
-<html lang="tr">
-
+<html lang="en">
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <title>Bir Ömür Sen ❤️</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cok yakisikli sami hocanın projesi</title>
     <style>
-
-        :root { --primary: #ff4d6d; --secondary: #ff85a1; --dark: #0f0c29; --envelope-color: #ff99aa; --envelope-dark: #ff85a1; }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; position: fixed; touch-action: manipulation; }
-
-        body { 
-
-            display: flex; align-items: center; justify-content: center; 
-
-            background: radial-gradient(circle at center, #1a1a2e 0%, #07071e 100%); 
-
-            font-family: 'Montserrat', sans-serif; color: white; text-align: center;
-
-            transition: filter 1s ease; /* Kararma efekti için eklendi */
-
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --bg-color: #e6ecf0;
+            --text-color: #2c3e50;
+            --challenge-color: #8e44ad;
         }
 
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-        /* DEKORLAR */
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
 
-        .decor-item { position: absolute; font-size: 2.5rem; pointer-events: none; z-index: 5; opacity: 0.6; }
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-        .top-left { top: 15px; left: 15px; transform: rotate(-15deg); }
+        .team-inputs {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+            margin: 30px 0;
+        }
 
-        .top-right { top: 15px; right: 15px; transform: rotate(15deg); }
+        .team-box { flex: 1; }
+        h3 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
 
-        .bottom-left { bottom: 15px; left: 15px; }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            resize: none;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
 
-        .bottom-right { bottom: 15px; right: 15px; }
+        textarea:focus { border-color: var(--primary-color); outline: none; }
 
+        input[type="number"], input[type="text"] {
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            width: 80%;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
 
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 5px;
+        }
 
-        /* GİRİŞ EKRANI */
+        button:hover { background-color: #357abd; transform: translateY(-2px); }
+        .btn-challenge { background-color: var(--challenge-color); }
 
-        #login-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 1000; transition: 1s; }
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+        }
 
-        .login-card { background: rgba(255,255,255,0.08); padding: 30px 25px; border-radius: 30px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); width: 85%; max-width: 320px; display: flex; flex-direction: column; align-items: center; }
+        .score-val { font-weight: bold; color: var(--primary-color); font-size: 1.2em; }
 
-        .login-card h2 { font-family: 'Dancing Script'; font-size: 2rem; color: var(--primary); margin: 0 0 20px 0; }
+        .word-display {
+            font-size: 2.8em;
+            color: var(--primary-color);
+            margin: 20px 0;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
 
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: none; text-align: center; outline: none; font-size: 1rem; -webkit-appearance: none; }
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            right: 30px;
+            top: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            opacity: 0;
+            transition: 0.3s;
+        }
 
-        .login-btn { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-
-
-
-        /* ANA PANEL */
-
-        .container { display: none; width: 92%; max-width: 400px; background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); padding: 25px 15px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 10; max-height: 95vh; overflow-y: auto; }
-
-        .photo-frame { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin: 0 auto 10px; background: url(https://i.hizliresim.com/rgp0kb1.png) center/cover; cursor: pointer; }
-
-        .timer { font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin: 5px 0; letter-spacing: -0.5px; }
-
-        .reasons { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 15px 0; }
-
-        .card { background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
-
-
-
-        /* ZARF SİSTEMİ */
-
-        #surpriz-bolumu { display: none; margin-top: 15px; animation: slideUp 1s forwards; }
-
-        .envelope-wrapper { position: relative; width: 240px; height: 140px; margin: 30px auto 0; perspective: 1000px; }
-
-        .envelope-base { position: absolute; width: 100%; height: 100%; background: var(--envelope-color); border-radius: 0 0 10px 10px; z-index: 2; overflow: hidden; }
-
-        .envelope-base::after { content:''; position: absolute; bottom:0; left:0; width:0; height:0; border-left:120px solid transparent; border-right:120px solid transparent; border-bottom:70px solid rgba(255,255,255,0.2); }
-
-        .flap { position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 120px solid transparent; border-right: 120px solid transparent; border-top: 80px solid var(--envelope-dark); transform-origin: top; transition: 0.6s; z-index: 4; }
-
-        .seal { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 30px; height: 30px; background: var(--primary); clip-path: path('M15 27c0 0-12-7.5-12-15 0-4.5 3-7.5 7.5-7.5 2.25 0 3.75 1.5 4.5 1.5s2.25-1.5 4.5-1.5c4.5 0 7.5 3 7.5 7.5 0 7.5-12 15-12 15z'); z-index: 5; }
-
-        .letter { position: absolute; bottom: 5px; left: 5px; width: 230px; background: white; border-radius: 5px; padding: 15px; color: #333; font-family: 'Dancing Script'; font-size: 1.1rem; opacity: 0; transition: 0.8s; z-index: 3; text-align: center; }
-
-        .envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 1; }
-
-        .envelope-wrapper.open .letter { transform: translateY(-120px); opacity: 1; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
-
-
-
-        /* OYUN */
-
-        .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
-
-        .cell { aspect-ratio: 1; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; overflow: hidden; }
-
-        .cell img { width: 100%; height: 100%; object-fit: cover; }
-
-        .cell.opened { background: white; color: var(--dark); font-weight: bold; }
-
-        .cell.fail { background: var(--primary) !important; }
-
-        .game-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 0.9rem; margin-top: 10px; }
-
-
-
-        /* MODAL */
-
-        #custom-modal { display: none; position: fixed; inset: 0; background: rgba(7, 7, 30, 0.85); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(12px); padding: 20px; }
-
-        .modal-content { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 77, 109, 0.4); padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 300px; }
-
-
-
-        .hidden { display: none !important; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .snowflake { position: absolute; top: -10px; color: white; user-select: none; z-index: 1; animation: fall linear infinite; pointer-events: none; }
-
-        @keyframes fall { to { transform: translateY(105vh) rotate(360deg); } }
-
+        #toast.show { visibility: visible; opacity: 1; }
+        #toast.success { background-color: var(--success-color); }
+        #toast.error { background-color: var(--error-color); }
     </style>
-
 </head>
-
 <body>
 
+<div id="toast"></div>
 
-
-    <div class="decor-item top-left">🎄</div>
-
-    <div class="decor-item top-right">🎁</div>
-
-    <div class="decor-item bottom-left">☃️</div>
-
-    <div class="decor-item bottom-right">🎅</div>
-
-
-
-    <div id="login-screen">
-
-        <div class="login-card">
-
-            <h2>Sadece Sana Özel</h2>
-
-            <input type="password" id="pw" placeholder="Bir an?" inputmode="text">
-
-            <button class="login-btn" onclick="login()">Giriş Yap ❤️</button>
-
+<div class="container">
+    <div id="setup-screen" class="screen active">
+        <h1>Team Registration</h1>
+        <div class="team-inputs">
+            <div class="team-box">
+                <h3>Team 1</h3>
+                <textarea id="team1-names" placeholder="Alice&#10;Bob"></textarea>
+            </div>
+            <div class="team-box">
+                <h3>Team 2</h3>
+                <textarea id="team2-names" placeholder="David&#10;Eve"></textarea>
+            </div>
         </div>
-
+        <button onclick="startGame()">Start Challenge</button>
     </div>
 
+    <div id="game-screen" class="screen">
+        <div class="score-board">
+            <div>Team 1: <span id="score1" class="score-val">0</span></div>
+            <div>Round: <span id="round-counter">1</span> / 10</div>
+            <div>Team 2: <span id="score2" class="score-val">0</span></div>
+        </div>
+        
+        <div id="turn-text" style="color:var(--secondary-color); font-weight: bold; font-size: 1.2em; margin-bottom: 10px;">Turn: Team 1</div>
 
-
-    <div id="custom-modal" onclick="this.style.display='none'">
-
-        <div class="modal-content" onclick="event.stopPropagation()">
-
-            <p id="modal-text" style="font-family:'Dancing Script'; font-size:1.6rem; color: var(--secondary); margin-bottom: 20px;"></p>
-
-            <button class="game-btn" style="width: 100%;" onclick="document.getElementById('custom-modal').style.display='none'">Tamam ❤️</button>
-
+        <div id="bet-section">
+            <p>Point Wager (10 - 100):</p>
+            <input type="number" id="point-bet" min="10" max="100" placeholder="50">
+            <br>
+            <button onclick="getWord()">Get Word</button>
         </div>
 
+        <div id="choice-section" style="display:none;">
+            <h2 id="mode-title" style="color:var(--challenge-color)">CHOOSE MODE:</h2>
+            <button onclick="setMode('normal')">Just Translate</button>
+            <button class="btn-challenge" onclick="setMode('sentence')">Sentence Challenge (+15 Bonus)</button>
+        </div>
+
+        <div id="question-section" style="display: none;">
+            <div class="word-display" id="english-word">WORD</div>
+            <p id="instruction-text">Translation?</p>
+            <input type="text" id="answer-input" placeholder="Type here...">
+            <br>
+            <button onclick="checkAnswer()">Submit</button>
+        </div>
     </div>
 
-
-
-    <div class="container" id="main">
-
-        <div id="ana-icerik">
-
-            <div class="photo-frame" id="easter-photo" onclick="triggerPhotoEgg()"></div>
-
-            <h1 id="long-press-title" style="font-family: 'Dancing Script'; font-size: 2.2rem; color: var(--primary); margin: 0; user-select: none;">İyi ki Varsın</h1>
-
-            <p style="font-size: 0.55rem; letter-spacing: 2px; margin-top: 10px; opacity: 0.8;">BERABER GEÇEN ÖMRÜMÜZ</p>
-
-            <div id="b-sayac" class="timer">...</div>
-
-
-
-            <div class="reasons">
-
-                <div class="card" onclick="openModal('Gülüşün yeter ✨')">Gülüşün ✨</div>
-
-               <div class="card" onclick="openModal('Sesin gecelerime ışık oluyor 🌙')">Sesin 🌙</div>
-              
-			  <div class="card" onclick="openModal('Kalbin masal gibi ❤️')">Kalbin ❤️</div>
-
-
-            </div>
-
-
-
-            <button class="game-btn" onclick="oyunuAc()">🎮 Aşk Tarlası Oyna</button>
-
-            <hr style="opacity: 0.1; margin: 20px 0;">
-
-
-
-            <div id="y-alan">
-
-                <h3 style="font-family: 'Dancing Script'; color: var(--primary); font-size: 1.6rem; margin: 0;">Sürpriz Mektuba Kalan</h3>
-
-                <div id="y-sayac" class="timer">...</div>
-
-            </div>
-
-
-
-            <div id="surpriz-bolumu">
-
-                <div class="envelope-wrapper" onclick="this.classList.toggle('open')">
-
-                    <div class="flap"></div>
-
-                    <div class="letter">
-
-                        <strong>Canım Sevgilim,</strong><br><br>
-
-                         Yeni yıla seninle girmek, her anı seninle paylaşmak hayatımın en güzel hediyesi. İyi ki varsın. Seni çok seviyorum ❤️
-
-                    </div>
-
-                    <div class="envelope-base"></div>
-
-                    <div class="seal"></div>
-
-                </div>
-
-                <p style="font-size:0.7rem; color:var(--secondary); margin-top:10px;">Mektuba dokunup açabilirsin ✨</p>
-
-            </div>
-
-        </div>
-
-
-
-        <div id="oyun-alani" class="hidden">
-
-            <h2 style="font-family: 'Dancing Script'; font-size: 2.2rem; color: var(--secondary); margin: 0;">Aşk Tarlası</h2>
-
-            <p style="font-size: 0.7rem; color: var(--primary); margin-bottom: 15px; font-weight: bold;">6 Resim Bulursan Kazanırsın!</p>
-
-            <div class="game-grid" id="grid"></div>
-
-            <button class="game-btn" onclick="anaSayfayaDon()" style="background:#333; margin-top: 20px;">← Geri Dön</button>
-
-        </div>
-
+    <div id="result-screen" class="screen">
+        <h1 id="winner-text">Game Over!</h1>
+        <h2 id="final-scores"></h2>
+        <button onclick="location.reload()">Play Again</button>
     </div>
+</div>
 
+<script>
+    const wordBank = {
+        easy: [
+            { en: "apple", tr: "elma" }, { en: "book", tr: "kitap" }, { en: "cat", tr: "kedi" },
+            { en: "water", tr: "su" }, { en: "sun", tr: "güneş" }, { en: "chair", tr: "sandalye" },
+            { en: "table", tr: "masa" }, { en: "milk", tr: "süt" }, { en: "window", tr: "pencere" },
+            { en: "door", tr: "kapı" }, { en: "bird", tr: "kuş" }, { en: "bread", tr: "ekmek" }
+        ],
+        medium: [
+            { en: "journey", tr: "yolculuk" }, { en: "freedom", tr: "özgürlük" }, { en: "bridge", tr: "köprü" },
+            { en: "adventure", tr: "macera" }, { en: "mountain", tr: "dağ" }, { en: "experience", tr: "tecrübe" },
+            { en: "scientist", tr: "bilim insanı" }, { en: "environment", tr: "çevre" }, { en: "discover", tr: "keşfetmek" },
+            { en: "balance", tr: "denge" }, { en: "creative", tr: "yaratıcı" }, { en: "dictionary", tr: "sözlük" }
+        ],
+        hard: [
+            { en: "ubiquitous", tr: "yaygın" }, { en: "ephemeral", tr: "geçici" }, { en: "inevitable", tr: "kaçınılmaz" },
+            { en: "vulnerable", tr: "savunmasız" }, { en: "prejudice", tr: "önyargı" }, { en: "extraordinary", tr: "olağanüstü" },
+            { en: "enthusiastic", tr: "hevesli" }, { en: "mysterious", tr: "gizemli" }, { en: "perseverance", tr: "azim" },
+            { en: "consequence", tr: "sonuç" }, { en: "implementation", tr: "uygulama" }, { en: "hierarchy", tr: "hiyerarşi" }
+        ]
+    };
 
+    let scores = [0, 0], currentTurn = 0, turnCount = 0, currentWordObj = null, currentPoints = 0, isSentenceMode = false;
 
-    <script>
+    function showToast(message, type = 'success') {
+        const t = document.getElementById("toast");
+        t.innerText = message;
+        t.className = "show " + type;
+        setTimeout(() => t.className = "", 3000);
+    }
 
-        const beraberlik = new Date(2025, 1, 9, 20, 45, 0); 
+    function switchScreen(hide, show) {
+        document.getElementById(hide).classList.remove('active');
+        setTimeout(() => document.getElementById(show).classList.add('active'), 400);
+    }
 
-        const hedef = new Date(2026, 0, 1, 0, 0, 0); 
-
-        let photoClicks = 0;
-
-
-
-        function openModal(t) { document.getElementById("modal-text").innerText = t; document.getElementById("custom-modal").style.display = "flex"; }
-
-        function oyunuAc() { document.getElementById("ana-icerik").classList.add("hidden"); document.getElementById("oyun-alani").classList.remove("hidden"); initGame(); }
-
-        function anaSayfayaDon() { document.getElementById("oyun-alani").classList.add("hidden"); document.getElementById("ana-icerik").classList.remove("hidden"); }
-
-
-
-        function triggerPhotoEgg() {
-
-            photoClicks++;
-
-            if(photoClicks >= 3) {
-
-                confetti({ particleCount: 100, spread: 60, colors: ['#ff4d6d', '#ffffff'], shapes: ['heart'] });
-
-                photoClicks = 0;
-
-            }
-
+    function startGame() {
+        if(!document.getElementById('team1-names').value.trim() || !document.getElementById('team2-names').value.trim()){
+            showToast("Enter names for both teams!", "error"); return;
         }
+        switchScreen('setup-screen', 'game-screen');
+        updateUI();
+    }
 
-
-
-        const titleEl = document.getElementById('long-press-title');
-
-        let pressTimer;
-
-        titleEl.addEventListener('touchstart', () => {
-
-            pressTimer = setTimeout(() => {
-
-                openModal("Gizli Not: Hayatıma girdiğin günden beri her şey daha güzel. Bu site, sana olan sevgimin küçük bir hatırası… 🌷");
-
-            }, 2000);
-
-        });
-
-        titleEl.addEventListener('touchend', () => clearTimeout(pressTimer));
-
-
-
-        /* YENİ EASTER EGG: EKRANA BASILI TUTUNCA KARARMA */
-
-        let worldTimer;
-
-        document.addEventListener('touchstart', (e) => {
-
-            // Sadece ana container üzerindeyken çalışması için
-
-            if(document.getElementById("main").style.display === "block") {
-
-                worldTimer = setTimeout(() => {
-
-                    document.body.style.filter = "brightness(0.1)";
-
-                    setTimeout(() => {
-
-                        openModal("Bunu bulman biraz zaman almış olabilir ama hemen bul istemedim. İlk konuşmaya başladığımız andan beri her şeyine ayrı aşık oluyorum. İyiki o gün yazmışsın (her ne kadar batırsamda). İyiki varsın güzelim. ❤️");
-
-                        document.body.style.filter = "none";
-
-                    }, 1000);
-
-                }, 5000); // 5 saniye basılı tutma
-
-            }
-
-        });
-
-        document.addEventListener('touchend', () => clearTimeout(worldTimer));
-
-
-
-        function login() {
-
-            const pwInput = document.getElementById("pw");
-
-            const sifre = pwInput.value.toLowerCase().trim().replace(/\s/g, '').replace('ş', 's');
-
-            
-
-            if(sifre === "20.45") {
-
-                document.getElementById("login-screen").style.opacity = "0";
-
-                setTimeout(() => {
-
-                    document.getElementById("login-screen").style.display = "none";
-
-                    document.getElementById("main").style.display = "block";
-
-                    confetti(); setInterval(update, 1000); update(); startSnow();
-
-                }, 1000);
-
-            } else { 
-
-                openModal("Yanlış şifre (saati bul) ❤️");
-
-                pwInput.value = ""; 
-
-            }
-
+    function getWord() {
+        currentPoints = parseInt(document.getElementById('point-bet').value);
+        if (isNaN(currentPoints) || currentPoints < 10 || currentPoints > 100) {
+            showToast("Wager must be 10-100!", "error"); return;
         }
+        let d = currentPoints <= 40 ? "easy" : currentPoints <= 70 ? "medium" : "hard";
+        currentWordObj = wordBank[d][Math.floor(Math.random() * wordBank[d].length)];
+        
+        document.getElementById('bet-section').style.display = 'none';
+        document.getElementById('choice-section').style.display = 'block';
+        document.getElementById('mode-title').innerText = d === "hard" ? "🔥 HARD WORD! SELECT MODE:" : "CHOOSE MODE:";
+    }
 
+    function setMode(m) {
+        isSentenceMode = m === 'sentence';
+        document.getElementById('choice-section').style.display = 'none';
+        document.getElementById('question-section').style.display = 'block';
+        document.getElementById('english-word').innerText = currentWordObj.en;
+        document.getElementById('instruction-text').innerText = isSentenceMode ? "Write a sentence using this word:" : "Turkish translation?";
+        document.getElementById('answer-input').value = '';
+        document.getElementById('answer-input').focus();
+    }
 
+    function checkGrammar(s, word) {
+        s = s.toLowerCase().trim(); // Cümleyi küçük harfe çevir
+        if(!s.includes(word.toLowerCase())) return {res: false, m: "Word missing!"};
+        
+        const sub = ['i ', 'you ', 'he ', 'she ', 'it ', 'we ', 'they ', 'the ', 'my ', 'this ', 'a ', 'an '];
+        const vrb = [' is ', ' are ', ' am ', ' was ', ' were ', ' have ', ' has ', ' can ', ' will ', ' play', ' go', ' feel', ' see', ' like'];
+        
+        const hasSub = sub.some(x => s.startsWith(x));
+        const hasVrb = vrb.some(x => s.includes(x));
 
-        function update() {
+        if(s.split(' ').length < 3) return {res: false, m: "Too short!"};
+        if(!hasSub && !hasVrb) return {res: false, m: "Bad sentence structure!"};
+        return {res: true};
+    }
 
-            const simdi = new Date();
+    function checkAnswer() {
+        const userVal = document.getElementById('answer-input').value.trim().toLowerCase(); // KÜÇÜK HARF YAPILDI
+        const correctTr = currentWordObj.tr.toLowerCase(); // KÜÇÜK HARF YAPILDI
 
-            const diffB = simdi - beraberlik;
-
-            document.getElementById("b-sayac").innerText = Math.floor(diffB/(1000*60*60*24)) + "g " + Math.floor((diffB/(1000*60*60))%24) + "s " + Math.floor((diffB/1000/60)%60) + "d " + Math.floor((diffB/1000)%60) + "s";
-
-            const diffY = hedef - simdi;
-
-            if(diffY <= 0) {
-
-                document.getElementById("y-alan").style.display = "none";
-
-                document.getElementById("surpriz-bolumu").style.display = "block";
-
+        if (!isSentenceMode) {
+            if (userVal === correctTr) {
+                scores[currentTurn] += currentPoints;
+                showToast(`Correct! +${currentPoints} pts`, "success");
             } else {
-
-                document.getElementById("y-sayac").innerText = Math.floor(diffY/(1000*60*60*24)) + "g " + Math.floor((diffY/(1000*60*60))%24) + "s " + Math.floor((diffY/1000/60)%60) + "d " + Math.floor((diffY/1000)%60) + "s";
-
+                showToast(`Wrong! Correct was: ${currentWordObj.tr}`, "error");
             }
-
+        } else {
+            let res = checkGrammar(userVal, currentWordObj.en);
+            if(res.res) {
+                let bonus = currentPoints + 15;
+                scores[currentTurn] += bonus;
+                showToast(`Perfect! Bonus: +${bonus} pts`, "success");
+            } else {
+                scores[currentTurn] -= 10;
+                showToast(`Invalid: ${res.m} (-10 pts)`, "error");
+            }
         }
 
+        turnCount++;
+        currentTurn = currentTurn === 0 ? 1 : 0;
+        setTimeout(() => {
+            if (turnCount >= 10) endGame();
+            else { resetUI(); updateUI(); }
+        }, 2000);
+    }
 
+    function resetUI() {
+        document.getElementById('bet-section').style.display = 'block';
+        document.getElementById('question-section').style.display = 'none';
+        document.getElementById('choice-section').style.display = 'none';
+        document.getElementById('point-bet').value = '';
+    }
 
-        function initGame() {
+    function updateUI() {
+        document.getElementById('score1').innerText = scores[0];
+        document.getElementById('score2').innerText = scores[1];
+        document.getElementById('turn-text').innerText = "Turn: Team " + (currentTurn + 1);
+        document.getElementById('round-counter').innerText = Math.floor(turnCount / 2) + 1;
+    }
 
-            const grid = document.getElementById("grid"); grid.innerHTML = "";
-
-            let opened = 0; let cells = [];
-
-            const askFoto = "https://i.hizliresim.com/dek2qhe.png"; 
-
-            const fotoHTML = `<img src="${askFoto}">`;
-
-            for(let i=0; i<14; i++) cells.push({type:'ok', val: fotoHTML});
-
-            for(let i=0; i<2; i++) cells.push({type:'bomb', val:'❌'});
-
-            cells.sort(() => Math.random() - 0.5);
-
-            cells.forEach(c => {
-
-                const div = document.createElement("div"); div.className = "cell"; div.innerText = "?";
-
-                div.onclick = () => {
-
-                    if(div.classList.contains('opened')) return;
-
-                    div.classList.add("opened"); div.innerHTML = c.val;
-
-                    if(c.type === 'bomb') { div.classList.add("fail"); setTimeout(() => { openModal("Bombaya bastın! ❤️"); initGame(); }, 300); }
-
-                    else { opened++; if(opened === 6) { confetti(); setTimeout(() => { openModal("Tebrikler kazandın! ❤️"); anaSayfayaDon(); }, 500); } }
-
-                };
-
-                grid.appendChild(div);
-
-            });
-
-        }
-
-
-
-        function startSnow() {
-
-            setInterval(() => {
-
-                const flake = document.createElement('div'); flake.className = 'snowflake'; flake.innerHTML = '❄';
-
-                flake.style.left = Math.random() * 100 + 'vw';
-
-                flake.style.animationDuration = Math.random() * 3 + 4 + 's';
-
-                document.body.appendChild(flake);
-
-                setTimeout(() => flake.remove(), 6000);
-
-            }, 400);
-
-        }
-
-    </script>
+    function endGame() {
+        switchScreen('game-screen', 'result-screen');
+        const winTxt = document.getElementById('winner-text');
+        if (scores[0] > scores[1]) winTxt.innerText = "🏆 Team 1 Wins! 🏆";
+        else if (scores[1] > scores[0]) winTxt.innerText = "🏆 Team 2 Wins! 🏆";
+        else winTxt.innerText = "🤝 Draw Game! 🤝";
+        document.getElementById('final-scores').innerText = `${scores[0]} - ${scores[1]}`;
+    }
+</script>
 
 </body>
-
-
-
 </html>
-
