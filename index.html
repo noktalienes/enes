@@ -22,7 +22,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
 
@@ -38,112 +38,72 @@
             overflow: hidden;
         }
 
-        .screen {
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease-out;
-        }
+        .screen { display: none; opacity: 0; transform: translateY(20px); transition: all 0.5s ease-out; }
+        .screen.active { display: block; opacity: 1; transform: translateY(0); }
 
-        .screen.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .team-inputs {
-            display: flex;
-            justify-content: space-between;
-            gap: 25px;
-            margin: 30px 0;
-        }
-
+        .team-inputs { display: flex; justify-content: space-between; gap: 25px; margin: 30px 0; }
         .team-box { flex: 1; }
         h3 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
 
         textarea {
-            width: 100%;
-            height: 120px;
-            padding: 12px;
-            border: 2px solid #e1e8ed;
-            border-radius: 10px;
-            resize: none;
-            font-size: 14px;
-            transition: border-color 0.3s;
-            box-sizing: border-box;
+            width: 100%; height: 120px; padding: 12px;
+            border: 2px solid #e1e8ed; border-radius: 10px;
+            resize: none; font-size: 14px; transition: border-color 0.3s; box-sizing: border-box;
         }
-
         textarea:focus { border-color: var(--primary-color); outline: none; }
 
         input[type="number"], input[type="text"] {
-            padding: 12px 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 10px;
-            width: 80%;
-            margin-bottom: 20px;
-            font-size: 16px;
+            padding: 12px 15px; border: 2px solid #e1e8ed; border-radius: 10px;
+            width: 80%; margin-bottom: 20px; font-size: 16px;
         }
 
         button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 5px;
+            background-color: var(--primary-color); color: white; border: none;
+            padding: 12px 28px; border-radius: 25px; cursor: pointer;
+            font-size: 16px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 5px;
         }
-
         button:hover { background-color: #357abd; transform: translateY(-2px); }
         .btn-challenge { background-color: var(--challenge-color); }
+        .btn-challenge:hover { background-color: #7d3c98; }
 
         .score-board {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border: 1px solid #eee;
+            display: flex; justify-content: space-around; align-items: center;
+            background: #f8f9fa; padding: 15px; border-radius: 10px;
+            margin-bottom: 25px; border: 1px solid #eee;
         }
-
         .score-val { font-weight: bold; color: var(--primary-color); font-size: 1.2em; }
 
         .word-display {
-            font-size: 2.8em;
-            color: var(--primary-color);
-            margin: 20px 0;
-            font-weight: 800;
-            text-transform: uppercase;
+            font-size: 2.8em; color: var(--primary-color);
+            margin: 20px 0; font-weight: 800; text-transform: uppercase;
         }
 
         #toast {
-            visibility: hidden;
-            min-width: 250px;
-            color: white;
-            text-align: center;
-            border-radius: 10px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1000;
-            right: 30px;
-            top: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            opacity: 0;
-            transition: 0.3s;
+            visibility: hidden; min-width: 250px; color: white; text-align: center;
+            border-radius: 10px; padding: 16px; position: fixed; z-index: 1000;
+            right: 30px; top: 30px; font-size: 16px; font-weight: 600;
+            opacity: 0; transition: 0.3s;
         }
-
         #toast.show { visibility: visible; opacity: 1; }
         #toast.success { background-color: var(--success-color); }
         #toast.error { background-color: var(--error-color); }
+
+        .checking-overlay {
+            display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.92); border-radius: 20px;
+            justify-content: center; align-items: center; flex-direction: column; gap: 14px;
+            z-index: 10;
+        }
+        .checking-overlay.show { display: flex; }
+        .spinner {
+            width: 38px; height: 38px; border: 3px solid #e1e8ed;
+            border-top-color: var(--challenge-color); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .checking-text { color: var(--challenge-color); font-weight: 600; font-size: 15px; }
     </style>
 </head>
 <body>
@@ -151,6 +111,11 @@
 <div id="toast"></div>
 
 <div class="container">
+    <div class="checking-overlay" id="checking-overlay">
+        <div class="spinner"></div>
+        <div class="checking-text">AI cümleyi kontrol ediyor...</div>
+    </div>
+
     <div id="setup-screen" class="screen active">
         <h1>Team Registration</h1>
         <div class="team-inputs">
@@ -172,7 +137,7 @@
             <div>Round: <span id="round-counter">1</span> / 10</div>
             <div>Team 2: <span id="score2" class="score-val">0</span></div>
         </div>
-        
+
         <div id="turn-text" style="color:var(--secondary-color); font-weight: bold; font-size: 1.2em; margin-bottom: 10px;">Turn: Team 1</div>
 
         <div id="bet-section">
@@ -205,24 +170,46 @@
 </div>
 
 <script>
+    // ==============================================
+    // BURAYA GEMINI API KEY'İNİ YAZ
+    const GEMINI_API_KEY = "-";
+    // ==============================================
+
     const wordBank = {
         easy: [
-            { en: "apple", tr: "elma" }, { en: "book", tr: "kitap" }, { en: "cat", tr: "kedi" },
-            { en: "water", tr: "su" }, { en: "sun", tr: "güneş" }, { en: "chair", tr: "sandalye" },
-            { en: "table", tr: "masa" }, { en: "milk", tr: "süt" }, { en: "window", tr: "pencere" },
-            { en: "door", tr: "kapı" }, { en: "bird", tr: "kuş" }, { en: "bread", tr: "ekmek" }
+            { en: "anymore", tr: "artık, daha fazla" }, { en: "arrival", tr: "varış, geliş" }, { en: "both", tr: "ikisi de, her ikisi" },
+            { en: "call", tr: "aramak, çağırmak, adlandırmak" }, { en: "conversation", tr: "sohbet, konuşma" }, { en: "dress up", tr: "giyinmek, süslenmek" },
+            { en: "elder", tr: "yaşlı, büyük, yaşça büyük" }, { en: "grocery", tr: "bakkal, market, manav" }, { en: "honest", tr: "dürüst, doğru" },
+            { en: "leafy", tr: "yapraklı" }, { en: "salty", tr: "tuzlu" }, { en: "search engine", tr: "arama motoru" },
+            { en: "similar", tr: "benzer" }, { en: "sour", tr: "ekşi" }, { en: "spicy", tr: "baharatlı, acı" },
+            { en: "square", tr: "meydan, kare" }, { en: "take off", tr: "çıkarmak, havalanmak" }, { en: "bitter", tr: "acı, keskin" },
+            { en: "bookworm", tr: "kitap kurdu" }
         ],
         medium: [
-            { en: "journey", tr: "yolculuk" }, { en: "freedom", tr: "özgürlük" }, { en: "bridge", tr: "köprü" },
-            { en: "adventure", tr: "macera" }, { en: "mountain", tr: "dağ" }, { en: "experience", tr: "tecrübe" },
-            { en: "scientist", tr: "bilim insanı" }, { en: "environment", tr: "çevre" }, { en: "discover", tr: "keşfetmek" },
-            { en: "balance", tr: "denge" }, { en: "creative", tr: "yaratıcı" }, { en: "dictionary", tr: "sözlük" }
+            { en: "admire", tr: "hayran olmak, beğenmek" }, { en: "alike", tr: "benzer, aynı, eş" }, { en: "community", tr: "topluluk, camia, halk" },
+            { en: "competition", tr: "yarışma, rekabet" }, { en: "disappear", tr: "kaybolmak, yok olmak" }, { en: "dull", tr: "sıkıcı, donuk, mat" },
+            { en: "effectively", tr: "etkili bir şekilde" }, { en: "especially", tr: "özellikle, bilhassa" }, { en: "foundation", tr: "vakıf, temel, kuruluş" },
+            { en: "generation", tr: "nesil, kuşak" }, { en: "handcraft", tr: "el işi, el sanatı" }, { en: "innovation", tr: "yenilik, inovasyon" },
+            { en: "invention", tr: "icat, buluş" }, { en: "look up", tr: "aramak, sözlüğe bakmak" }, { en: "loose", tr: "gevşek, bol" },
+            { en: "manner", tr: "tavır, tarz, biçim" }, { en: "nutritious", tr: "besleyici, gıdalı" }, { en: "opportunity", tr: "fırsat, imkan" },
+            { en: "pastry", tr: "hamur işi, börek, pasta" }, { en: "plain", tr: "sade, düz, yalın" }, { en: "preserve", tr: "korumak, muhafaza etmek" },
+            { en: "resist", tr: "direnmek, karşı koymak" }, { en: "announce", tr: "duyurmak, ilan etmek" }, { en: "consume", tr: "tüketmek, bitirmek" },
+            { en: "exact", tr: "tam, kesin" }, { en: "feast", tr: "bayram, şölen, ziyafet" }, { en: "firework", tr: "havai fişek" },
+            { en: "ignore", tr: "görmezden gelmek, yok saymak" }, { en: "influence", tr: "etki, etkilemek" }, { en: "investment", tr: "yatırım" },
+            { en: "no matter", tr: "fark etmez, önemi yok" }, { en: "parade", tr: "geçit töreni, tören" }, { en: "pickle", tr: "turşu" },
+            { en: "sculpture", tr: "heykel, heykelcik" }, { en: "statue", tr: "heykel, anıt" }, { en: "torch", tr: "el feneri, meşale" },
+            { en: "universal", tr: "evrensel" }, { en: "vinegar", tr: "sirke" }
         ],
         hard: [
-            { en: "ubiquitous", tr: "yaygın" }, { en: "ephemeral", tr: "geçici" }, { en: "inevitable", tr: "kaçınılmaz" },
-            { en: "vulnerable", tr: "savunmasız" }, { en: "prejudice", tr: "önyargı" }, { en: "extraordinary", tr: "olağanüstü" },
-            { en: "enthusiastic", tr: "hevesli" }, { en: "mysterious", tr: "gizemli" }, { en: "perseverance", tr: "azim" },
-            { en: "consequence", tr: "sonuç" }, { en: "implementation", tr: "uygulama" }, { en: "hierarchy", tr: "hiyerarşi" }
+            { en: "carpet weaving", tr: "halı dokuma" }, { en: "close-fitting", tr: "dar, vücuda oturan, sıkı" }, { en: "coincidence", tr: "tesadüf, rastlantı" },
+            { en: "conservative", tr: "muhafazakar, tutucu" }, { en: "copper work", tr: "bakır işi, bakırcılık" }, { en: "craftsman", tr: "usta, zanaatkar, esnaf" },
+            { en: "descendant", tr: "soyundan gelen, torun" }, { en: "embroidery", tr: "nakış, işleme" }, { en: "fertile", tr: "verimli, bereketli" },
+            { en: "gas lantern", tr: "gaz lambası, gaz feneri" }, { en: "oriental", tr: "doğuya özgü, oryantal" }, { en: "pottery", tr: "çömlekçilik" },
+            { en: "revolutionary", tr: "devrimci, köklü" }, { en: "brine", tr: "salamura, tuzlu su" }, { en: "component", tr: "parça, bileşen, eleman" },
+            { en: "digestive", tr: "sindirim, hazım" }, { en: "diverse", tr: "çeşitli, farklı" }, { en: "enthusiastically", tr: "hevesle, coşkuyla" },
+            { en: "intensive", tr: "yoğun" }, { en: "municipality", tr: "belediye" }, { en: "parsley", tr: "maydanoz" },
+            { en: "recite", tr: "ezbere okumak, anlatmak" }, { en: "sentimental", tr: "duygusal, hisli" }, { en: "sovereignty", tr: "egemenlik, hakimiyet" },
+            { en: "spiritual", tr: "ruhani, manevi" }, { en: "utensil", tr: "mutfak eşyası, kap kacak" }
         ]
     };
 
@@ -232,7 +219,7 @@
         const t = document.getElementById("toast");
         t.innerText = message;
         t.className = "show " + type;
-        setTimeout(() => t.className = "", 3000);
+        setTimeout(() => t.className = "", 3500);
     }
 
     function switchScreen(hide, show) {
@@ -255,7 +242,7 @@
         }
         let d = currentPoints <= 40 ? "easy" : currentPoints <= 70 ? "medium" : "hard";
         currentWordObj = wordBank[d][Math.floor(Math.random() * wordBank[d].length)];
-        
+
         document.getElementById('bet-section').style.display = 'none';
         document.getElementById('choice-section').style.display = 'block';
         document.getElementById('mode-title').innerText = d === "hard" ? "🔥 HARD WORD! SELECT MODE:" : "CHOOSE MODE:";
@@ -271,50 +258,89 @@
         document.getElementById('answer-input').focus();
     }
 
-    function checkGrammar(s, word) {
-        s = s.toLowerCase().trim(); // Cümleyi küçük harfe çevir
-        if(!s.includes(word.toLowerCase())) return {res: false, m: "Word missing!"};
-        
-        const sub = ['i ', 'you ', 'he ', 'she ', 'it ', 'we ', 'they ', 'the ', 'my ', 'this ', 'a ', 'an '];
-        const vrb = [' is ', ' are ', ' am ', ' was ', ' were ', ' have ', ' has ', ' can ', ' will ', ' play', ' go', ' feel', ' see', ' like'];
-        
-        const hasSub = sub.some(x => s.startsWith(x));
-        const hasVrb = vrb.some(x => s.includes(x));
+    async function checkSentenceWithAI(sentence, word) {
+        const overlay = document.getElementById('checking-overlay');
+        overlay.classList.add('show');
+        try {
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=-`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `You are a strict English grammar checker for a vocabulary game.
+The target word is: "${word}"	
+The student wrote: "${sentence}"
 
-        if(s.split(' ').length < 3) return {res: false, m: "Too short!"};
-        if(!hasSub && !hasVrb) return {res: false, m: "Bad sentence structure!"};
-        return {res: true};
+Check if this sentence is grammatically correct English AND properly uses the word "${word}".
+Reply ONLY with this exact JSON format, nothing else, no markdown:
+{"valid": true, "reason": "Doğru kullanım"}
+or
+{"valid": false, "reason": "Kısa Türkçe sebep (max 6 kelime)"}`
+                            }]
+                        }],
+                        generationConfig: { temperature: 0.1, maxOutputTokens: 100 }
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                const err = await response.json();
+                console.error("Gemini API error:", err);
+                return { valid: false, reason: "API bağlantı hatası" };
+            }
+
+            const data = await response.json();
+            const text = data.candidates[0].content.parts[0].text.trim();
+            const match = text.match(/\{[\s\S]*\}/);
+            if (!match) return { valid: false, reason: "Yanıt parse edilemedi" };
+            return JSON.parse(match[0]);
+        } catch(e) {
+            console.error("Fetch error:", e);
+            return { valid: false, reason: "Bağlantı hatası" };
+        } finally {
+            overlay.classList.remove('show');
+        }
     }
 
-    function checkAnswer() {
-        const userVal = document.getElementById('answer-input').value.trim().toLowerCase(); // KÜÇÜK HARF YAPILDI
-        const correctTr = currentWordObj.tr.toLowerCase(); // KÜÇÜK HARF YAPILDI
+    async function checkAnswer() {
+        const userVal = document.getElementById('answer-input').value.trim().toLowerCase();
+        const correctTr = currentWordObj.tr.toLowerCase();
+        const acceptableAnswers = correctTr.split(',').map(ans => ans.trim());
 
         if (!isSentenceMode) {
-            if (userVal === correctTr) {
+            if (acceptableAnswers.includes(userVal)) {
                 scores[currentTurn] += currentPoints;
                 showToast(`Correct! +${currentPoints} pts`, "success");
             } else {
                 showToast(`Wrong! Correct was: ${currentWordObj.tr}`, "error");
             }
+            nextTurn();
         } else {
-            let res = checkGrammar(userVal, currentWordObj.en);
-            if(res.res) {
-                let bonus = currentPoints + 15;
+            const raw = document.getElementById('answer-input').value.trim();
+            if (!raw) { showToast("Write a sentence first!", "error"); return; }
+            const result = await checkSentenceWithAI(raw, currentWordObj.en);
+            if (result.valid) {
+                const bonus = currentPoints + 15;
                 scores[currentTurn] += bonus;
-                showToast(`Perfect! Bonus: +${bonus} pts`, "success");
+                showToast(`Perfect sentence! +${bonus} pts`, "success");
             } else {
-                scores[currentTurn] -= 10;
-                showToast(`Invalid: ${res.m} (-10 pts)`, "error");
+                scores[currentTurn] = Math.max(0, scores[currentTurn] - 10);
+                showToast(`Invalid: ${result.reason} (-10 pts)`, "error");
             }
+            nextTurn();
         }
+    }
 
+    function nextTurn() {
         turnCount++;
         currentTurn = currentTurn === 0 ? 1 : 0;
         setTimeout(() => {
             if (turnCount >= 10) endGame();
             else { resetUI(); updateUI(); }
-        }, 2000);
+        }, 2500);
     }
 
     function resetUI() {
@@ -340,6 +366,5 @@
         document.getElementById('final-scores').innerText = `${scores[0]} - ${scores[1]}`;
     }
 </script>
-
 </body>
 </html>
